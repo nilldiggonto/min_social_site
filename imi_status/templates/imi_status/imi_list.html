@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{%block title%}Staus area {% endblock %}
+
+
+{% block content %}
+
+
+<div class="container">
+
+    <div class="row ">
+
+        <div class="col-md-3 pt-2">
+            <div class="card bg-primary">
+                <div class="card-header">
+                    <div class="jumbotron bg-primary text-light">
+                        {% if user.is_authenticated %}
+                            <h4>Welcome {{user}}!!</h4>
+                            
+                            <p>Whats on your mind today!!!</p>
+                            {% else %}
+                            <h4>Excuse me!! Outsider</h4>
+                            <p>So...!!should i welcome you!!</p>
+                            {% endif %}
+                           
+                    </div>
+                </div>
+            </div>
+
+            
+        </div>
+
+           
+        <div class="col-md-9 pt-2 ">
+
+            <div class="card mb-2" id="post-container">
+                
+            </div>
+
+
+            {% if user.is_authenticated %}
+            <div class="card mb-2">
+                <div class="card-header bg-primary text-white text-center">
+                    <h4><i class="fas fa-coffee"></i> Generate your Thoughts!!</h4>
+                </div>
+                <div class="card-body">
+                    {% if not request.GET.q %}
+                    {% include 'imi_status/form.html' with form_id='imi-form' form=create_form action_url=create_url btn_title='Generate' btn_class='btn-primary' %}
+                    {% endif %}
+                </div>
+            </div>
+            {% else %}
+
+                <div class="card mb-2">
+                    <div class="card-header bg-primary text-light text center">
+                        Wanna share your feelings..why not login!! 
+                    </div>
+                </div>
+
+            {% endif %}
+
+
+                {% for object in object_list %}
+            <div class="card bg-secondary border-warning mb-2  ">
+                <div class="card-header ">
+                    <a style="text-decoration:none;" href="{{object.get_user_url}}"><h4 class="text-primary d-inline pr-1">@{{object.user}}</h4><span class="text-info"><i class="far fa-clock"></i> {{object.timestamp|timesince}} ago</span> </a>
+                    
+                </div>
+                <div class="card-body">
+                    <p>{{object.content|truncatechars:100}}</p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-info" href="{{object.get_absolute_url}}"><i class="fas fa-expand-arrows-alt"></i> See more</a> {% if user == object.user %} 
+                    <a class="btn btn-sm btn-warning" href="{{object.get_update_url}}"><i class="fas fa-marker"></i> Edit Post</a> 
+                   
+                    <a class="btn btn-sm btn-danger" href="{{object.get_delete_url}}"><i class="fas fa-trash"></i> Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% empty %}
+            {%if request.GET.q %}
+            <div class="card">
+                <div class="card-header text-center text-danger">Dafaq you look for!!</div>
+            </div>
+            
+            {% else %}
+
+            <div class="card">
+                <div class="card-header text-center text-warning">No posts yet!!</div>
+            </div>
+
+            {% endif %}
+
+
+            {% endfor %}
+        </div>
+
+       
+
+
+    </div>
+</div>
+
+
+{% endblock %}

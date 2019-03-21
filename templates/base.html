@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <meta http-equiv="refresh" content="1" > -->
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{%block title %}Imi_site{% endblock  %}</title>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://bootswatch.com/4/simplex/bootstrap.css">
+<link href="https://fonts.googleapis.com/css?family=Ropa+Sans" rel="stylesheet">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
+<style>
+    body{
+    font-family: 'Ropa Sans', sans-serif;
+    }
+
+    .navbar{
+        padding:0px 10px 0px 10px;
+    }
+
+</style>
+</head>
+<body>
+    
+</body>
+
+   
+
+    {% include 'partial/_navbar.html' %}
+
+  
+    
+
+
+    {%block content %}
+
+    {% endblock%}
+
+
+
+
+
+    <!-- jQuery library -->
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<!-- Popper JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+
+<!-- Latest compiled JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        console.log('working')
+
+        function getParameterByName(name, url) {
+            if (!url) url = window.location.href;
+            name = name.replace(/[\[\]]/g, '\\$&');
+            var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                results = regex.exec(url);
+            if (!results) return null;
+            if (!results[2]) return '';
+            return decodeURIComponent(results[2].replace(/\+/g, ' '));
+        }
+
+        var query = getParameterByName('q')
+
+
+        function fetchPost(){
+          
+        $.ajax({
+            url:'/api/',
+            data:{
+                'q':query
+            },
+            method: 'GET',
+            
+            success:function(data){
+               
+                $.each(data,function(key,value){
+                   
+                    var imiKey = key
+                    
+                    
+                    var imiContent = value.content
+                    var imiUser     = value.user
+                    $('#post-container').append(
+                        "<li>" + imiContent + "<br>" + imiUser.username + "|" + "< a href ='#'>view </a>" +"</li>"
+                    )
+                })
+            },
+            error:function(data){
+                console.log(data + 'error')
+            }
+        });
+        }
+        fetchPost()
+        var charsStart = 140;
+        var charsCurrent = 0;
+        $('#imi-form').append("<span id='imiCharsLeft' class='badge badge-pill badge-info'>" + charsStart+ " </span>")
+        $('#imi-form textarea').keyup(function(event){
+            console.log(event.key)
+            
+            var imiValue = $(this).val()
+            charsCurrent = charsStart - imiValue.length
+            
+            var spanChars = $('#imiCharsLeft')
+            spanChars.text(charsCurrent)
+            $('#imiCharsLeft').text(charsCurrent)
+
+
+            if(charsCurrent > 0){
+                spanChars.removeClass('badge badge-pill badge-info')
+                spanChars.removeClass('badge badge-pill badge-primary')
+                spanChars.addClass('badge badge-pill badge-success')
+            }
+            else if (charsCurrent == 0){
+                spanChars.removeClass('badge badge-pill badge-primary')
+                spanChars.addClass('badge badge-pill badge-info')
+            }
+            else if(charsCurrent < 0){
+                spanChars.removeClass('badge badge-pill badge-info')
+                
+                spanChars.removeClass('badge badge-pill badge-success')
+                spanChars.addClass('badge badge-pill badge-primary')
+               
+            }
+        })
+
+        $('#imi-form').submit(function(e){
+            e.preventDefault()
+            var this_ = $(this)
+            var formData = this_.serialize()
+            if (charsCurrent >=0) {
+            $.ajax({
+                url:'/api/create/',
+                data:formData,
+                method:'POST',
+                success:function(data){
+                    console.log(data)
+                    location.reload();  
+                   
+                },
+                error:function(data){
+                    console.log('error')
+                    conosle.log(data)
+                }
+
+            })
+        }
+        else{
+           
+           
+            console.log('Cant send//Its two long')
+        }
+           
+           
+        })
+
+
+
+
+
+
+
+        /* Search form */
+        var typingTime;
+        var doneInterval = 1000;
+        var searchInput =$('#navbar-search-form input[type=text]')
+        var searchQuery
+      
+            searchInput.keyup(function(e){
+               
+             
+               searchQuery = $(this).val()
+               clearTimeout(typingTime)
+               typingTime = setTimeout(doneSearchTypeing, doneInterval)
+              
+            })
+            searchInput.keydown(function(e){
+                clearTimeout(typingTime)
+            })
+
+            function doneSearchTypeing(){
+                if (searchQuery){
+                    var url = '/list/?q='+ searchQuery
+                    document.location.href= url;
+                }
+            }
+         
+
+
+
+
+    });
+</script>
+
+{% block script %} {% endblock script %}
+</html>

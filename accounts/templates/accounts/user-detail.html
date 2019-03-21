@@ -1,0 +1,114 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+<div class="container">
+    <div class="row">
+        <div class="col-md-3 pt-2">
+            <div class="card bg-primary">
+                <div class="card-header">
+                    <div class="jumbotron bg-primary text-light">
+                        {% if user.is_authenticated %}
+                            <h4>Welcome {{object.username}}!!</h4>
+                            <p>Follower: {{object.followed_by.count}}</p>
+                           
+                            {% else %}
+                            <h4>Excuse me!! Outsider</h4>
+                            <p>So...!!should i welcome you!!</p>
+                            {% endif %}
+                           
+                    </div>
+                </div>
+            </div>
+        
+            
+        </div> <!--col-md-3-->
+
+        <div class="col-md-9 pt-2 ">
+
+            <div class="card mb-2" id="post-container">
+                <div class="jumbotron bg-primary text-white">
+                    <h1>Welcome to your Profile INfo</h1>      
+                    <p>  !!</p>
+                   
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="card bg-primary">
+                                <div class="card-header text-center">
+                                    <h4>Following</h4>
+                                </div>
+                                <div class="card-body text-center">
+                                        {%for user in object.profile.follow.all %}
+                                     <a class="text-light" href="/user_detail/{{user.username}}"><h5>   {{ user.username}}</h5></a>
+                                        
+                                     {%empty%}
+                                    <h5>You Followed No one</h5>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                                <div class="card bg-primary">
+                                    <div class="card-header text-center">
+                                        <h4>Followed</h4>
+                                    </div>
+                                    <div class="card-body text-center">
+                                            {%for profile in object.followed_by.all %}
+                                            
+                                         <a class="text-light" href="/user_detail/{{profile.user.username}}"><h5>   {{ profile.user.username}}</h5></a>
+                                        {%empty%}
+                                        <h5>No one Folloing</h5>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            </div>
+                    </div>
+                  
+                  </div>  
+            </div>
+
+
+              
+
+                {% for posts in object.imistatus_set.all %}
+            <div class="card bg-secondary border-warning mb-2  ">
+                <div class="card-header ">
+                    <h4 class="text-primary d-inline pr-1">@{{posts.user}}</h4><span class="text-info"><i class="far fa-clock"></i> {{posts.timestamp|timesince}} ago</span> 
+                </div>
+                <div class="card-body">
+                    <p>{{posts.content|truncatechars:100}}</p>
+                </div>
+                <div class="card-footer">
+                    <a class="btn btn-sm btn-info" href="{{posts.get_absolute_url}}"><i class="fas fa-expand-arrows-alt"></i> See more</a> {% if user == posts.user %} 
+                    <a class="btn btn-sm btn-warning" href="{{posts.get_update_url}}"><i class="fas fa-marker"></i> Edit Post</a> 
+                   
+                    <a class="btn btn-sm btn-danger" href="{{posts.get_delete_url}}"><i class="fas fa-trash"></i> Delete</a>
+                    {% endif %}
+                </div>
+            </div>
+
+            {% empty %}
+            {%if request.GET.q %}
+            <div class="card">
+                <div class="card-header text-center text-danger">Dafaq you look for!!</div>
+            </div>
+            
+            {% else %}
+
+            <div class="card">
+                <div class="card-header text-center text-warning">No posts yet!!</div>
+            </div>
+
+            {% endif %}
+
+
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+
+{% endblock %}

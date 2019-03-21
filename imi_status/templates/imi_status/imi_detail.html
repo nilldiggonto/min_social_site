@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{%block title%}Detail {% endblock%}
+
+
+{% block content %}
+
+
+
+<div class="container pt-4">
+        <div class="card">
+            
+           
+                  {% include 'partial/_alerts.html' %}
+                           
+                              
+            <div class="card-header">
+                    <h4 class="text-dark d-inline pr-1">@{{object.user}}</h4><span class="text-info"><i class="far fa-clock"></i> {{object.timestamp|timesince}} ago</span> 
+            </div>
+                           
+                           
+                       
+           
+           
+            <div class="card-body">
+                    <h4 class="text-dark">{{object.content}}</h4>
+            </div>
+            
+    
+            <div class="card-footer">
+                    <a class="btn btn-sm btn-info" href="{% url 'post:list' %}"><i class="fas fa-arrow-left"></i> Go Back</a> {% if user == object.user %} 
+                    <a class="btn btn-sm btn-warning" href="{{object.get_update_url}}"><i class="fas fa-marker"></i> Edit Post</a> 
+                   
+                    <a class="btn btn-sm btn-danger" href="{{object.get_delete_url}}"><i class="fas fa-trash"></i> Delete</a>
+                    {% endif %}
+            </div>
+    
+        </div>
+    </div>
+    
+
+
+{% endblock %}
